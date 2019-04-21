@@ -1,0 +1,24 @@
+{
+  "name": "multiplayer-game-342",
+  "version": "1.0.0",
+  "description": "Guys PLEASE PLEASE PLEASE, use git branching to work on separate parts of the project, I will make multiple folders where the source code for various aspects of the project shall be, and I will handle the merging, please just try to communicate any changes you might make that could conflict with anything anyone else is working on! - Alex",
+  "main": "index.js",
+  "dependencies": {
+    "express": "^4.16.4",
+    "socket.io": "^2.2.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexchomiak/multiplayer-game-342.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alexchomiak/multiplayer-game-342/issues"
+  },
+  "homepage": "https://github.com/alexchomiak/multiplayer-game-342#readme"
+}
