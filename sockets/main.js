@@ -55,10 +55,6 @@ io.on('connect', (socket) => {
 
         //initialize heartbeat pulse
         setInterval( () => {
-            //update movement
-
-
-    
 
             //grab players data
             let playersData = Array.from(players, player => player.playerData)
@@ -88,7 +84,7 @@ io.on('connect', (socket) => {
      
         player.playerData.turretAngle = data.turretAngle
 
-        
+
         if(data.forwards && !data.backwards) {
             newX =  player.playerData.x +  Math.sin(player.playerData.angle) * player.playerConfig.speed
             newY = player.playerData.y -  Math.cos(player.playerData.angle) * player.playerConfig.speed
