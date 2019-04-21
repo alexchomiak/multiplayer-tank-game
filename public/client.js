@@ -15,7 +15,6 @@ init()
 
 //socket listeners
 socket.on('initialized', (data) => {
-    console.log(data)
     player = {
         x: data.playerX,
         y: data.playerY,
@@ -37,15 +36,18 @@ socket.on('tock', (data) => {
         turretAngle: data.playerTurretAngle
     }
     players = data.players
-
-
+    console.log(players)
+    bullets = data.bullets
     socket.emit('tick', {
         left,
         right,
         forwards,
         backwards,
-        turretAngle
+        turretAngle,
+        clicked
     })
+
+    if(clicked === true) clicked = false
 })
 
 //tick

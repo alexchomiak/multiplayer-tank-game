@@ -45,8 +45,10 @@ function draw() {
 
    
 
-
+    console.log('---------')
     players.forEach((p) => {
+        console.log(p.x,p.y)
+      
         context.save()
         context.scale(1,1)
    
@@ -56,11 +58,20 @@ function draw() {
         context.drawImage(tank,-tank.width/2,-tank.height/2)
 
         context.rotate(-p.angle)
-        context.rotate((p.turretAngle + Math.PI/2))
+        context.rotate(p.turretAngle)
         context.drawImage(turret,-tank.width/2,-tank.height/2)
         
         context.restore()
     })
+
+    console.log('----------')
+    bullets.forEach((bullet) => {
+        context.beginPath()
+        context.fillStyle = "rgb(255, 255, 0)"
+        context.arc(bullet.x,bullet.y,5,0,Math.PI *2)
+        context.fill()
+    })
+
 
     context.beginPath()
     context.fillStyle = 'rgb(0,255,0)'
@@ -73,17 +84,23 @@ function draw() {
 document.onkeydown = checkKeyDown;
 document.onkeyup = checkKeyUp
 
+
+document.onclick = handleClick;
+
 canvas.addEventListener('mousemove',(event) => {
     const mousePosition = {
         x: event.clientX,
         y: event.clientY
     };
-    turretAngle = Math.atan2(mousePosition.y - (canvas.height/2), mousePosition.x - (canvas.width/2)) ;
+    turretAngle = Math.atan2(mousePosition.y - (canvas.height/2), mousePosition.x - (canvas.width/2)) + (Math.PI / 2);
     
 })
 
+function handleClick() {
+    clicked = true
+}
+
 function checkKeyDown(e) {
-    console.log(e)
 	if (e.keyCode == '38' || e.keyCode == '87') {
         // up arrow
 		forwards = true
@@ -104,7 +121,6 @@ function checkKeyDown(e) {
 
 }
 function checkKeyUp(e) {
-    e = e || window.event;
     // console.log(e);
     if (e.keyCode == '38' || e.keyCode == '87') {
         // up arrow

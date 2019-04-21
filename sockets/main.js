@@ -4,6 +4,7 @@ const io = require('../server').io
 const Player = require('./classes/Player')
 const PlayerConfig = require('./classes/PlayerConfig')
 const PlayerData = require('./classes/PlayerData')
+const Bullet = require('./classes/Bullet')
 
 let tankSize = undefined
 
@@ -17,6 +18,19 @@ let gameSettings = {
 
 let players = []
 let bullets = []
+
+const bulletVelocity = 15
+setInterval(() => {
+    //update bullet locations
+    bullets.forEach((bullet) => {
+        if(bullet.x > gameSettings.mapWidth + tankSize || bullet.x < 0 || bullet.y > gameSettings.mapHeight + tankSize || bullet.y < 0) bullets.splice(bullets.indexOf(bullet),1)
+        bullet.x += Math.sin(bullet.shotAngle) * bulletVelocity
+        bullet.y -= Math.cos(bullet.shotAngle) * bulletVelocity
+
+
+       
+    })
+},gameSettings.tickRate)
 
 
 io.on('connect', (socket) => {
@@ -43,6 +57,7 @@ io.on('connect', (socket) => {
 
         let playersData = Array.from(players, player => player.playerData)
         socket.emit('initialized', {
+            bullets,
             players: playersData,
             playerX : playerData.x,
             playerY : playerData.y,
@@ -61,20 +76,21 @@ io.on('connect', (socket) => {
 
             //emit data
             socket.emit('tock',{
+            bullets,
             players: playersData,
             playerX: player.playerData.x,
             playerY: player.playerData.y,
-            playerAngle: player.playerData.angle,
-            playerTurretAngle: playerData.turretAngle,
-            health: player.playerData.health
         }) 
     }, gameSettings.tickRate)
         
-    })
+    })  
+
+    
 
     socket.on('disconnect', () => {
         
-        players.splice(players.indexOf(player),1)
+        console.log('disconnected' + socket.id)
+        players = players.filter((p) => p.id != player.id)
     })
 
     socket.on('tick', (data) => {
@@ -109,5 +125,21 @@ io.on('connect', (socket) => {
             player.playerData.angle += player.playerConfig.angularSpeed
         }
 
+        //check if clicked
+        if(data.clicked) {
+            let initialX = player.playerData.x
+            let initialY = player.playerData.y
+            initialX += tankSize /2
+            initialY += tankSize /2
+
+            initialX += (tankSize/1.5) * Math.sin(player.playerData.turretAngle)
+            initialY -= (tankSize/1.5) * Math.cos(player.playerData.turretAngle)
+
+            bullets.push(new Bullet(initialX,initialY,player.playerData.turretAngle,player.name,player.id))
+        }
+
     })
+
+
+  
 })

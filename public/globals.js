@@ -1,6 +1,6 @@
 let player = {}
 let players = []
-let currentBullets = []
+let bullets = []
 let settings = {
 }
 
@@ -8,6 +8,7 @@ let forwards = false
 let backwards = false
 let left = false
 let right = false
+let clicked = false
 let turretAngle = 0
 
 //images
