@@ -5,6 +5,7 @@ class Bullet {
         this.shotAngle = shotAngle
         this.ownerUserName = ownerUserName
         this.ownerID = ownerID
+        this.reflectCount= 0;
     }
 }
 

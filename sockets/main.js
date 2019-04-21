@@ -23,10 +23,24 @@ const bulletVelocity = 15
 setInterval(() => {
     //update bullet locations
     bullets.forEach((bullet) => {
-        if(bullet.x > gameSettings.mapWidth + tankSize || bullet.x < 0 || bullet.y > gameSettings.mapHeight + tankSize || bullet.y < 0) bullets.splice(bullets.indexOf(bullet),1)
+      
         bullet.x += Math.sin(bullet.shotAngle) * bulletVelocity
         bullet.y -= Math.cos(bullet.shotAngle) * bulletVelocity
 
+        if(bullet.x > gameSettings.mapWidth + tankSize || bullet.x < 0 || bullet.y > gameSettings.mapHeight + tankSize || bullet.y < 0) {
+            if(bullet.x < 0) bullet.x = 1;
+            if(bullet.x > gameSettings.mapWidth + tankSize) bullet.x = gameSettings.mapWidth + tankSize - 1
+
+            if(bullet.y < 0) bullet.y = 1;
+            if(bullet.y > gameSettings.mapHeight + tankSize) bullet.y = gameSettings.mapHeight + tankSize - 1
+
+            bullet.shotAngle += Math.PI -  ( Math.PI/2 -  bullet.shotAngle) 
+
+            bullet.reflectCount++;
+            if(bullet.reflectCount > 2) bullets.splice(bullets.indexOf(bullet),1)
+
+      
+        }
 
        
     })
