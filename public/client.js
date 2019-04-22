@@ -5,7 +5,7 @@ function init() {
     draw()
 
     socket.emit('init', {
-        username: "test",
+        username: prompt("username"),
         tankSize: tank.width
     })
 }

@@ -12,18 +12,18 @@ const bulletCollidingWithPlayer = require('./colllision').bulletCollidingWithPla
 const rectCollision = require('./colllision').rectCollideswithOtherRect
 
 
-let tankSize = undefined
+let tankSize = 65
 let pillarSize = 64
 
 const fps = 30
 
 let gameConfig = {
-    pillarCount : 10
+    pillarCount : 100
 }
 
 let gameSettings = {
-    mapWidth : 1000,
-    mapHeight : 1000,
+    mapWidth : 2000,
+    mapHeight : 2000,
     tickRate : 1000/fps
 }
 
@@ -110,9 +110,7 @@ setInterval(() => {
                 let offset = 10
 
             
-                console.log(pillar.y, pillar.y + pillarSize)
-                console.log(oldBulletY,bullet.y)
-                console.log('--------------')
+              
                 if(oldBulletX < pillar.x || oldBulletX > pillar.x + pillarSize) {
                     bullet.xVec = -bullet.xVec
                 }
@@ -145,7 +143,7 @@ io.on('connect', (socket) => {
         //init playerdata
         let playerData = new PlayerData(socket.id,data.username,10,10)
 
-        if(tankSize === undefined) tankSize = data.tankSize
+    
 
         player = new Player(data.username,socket.id,playerConfig,playerData)
 

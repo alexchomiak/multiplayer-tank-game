@@ -8,7 +8,7 @@ let wHeight = $(window).height();
 let wWidth = $(window).width();
 canvas.width = wWidth
 canvas.height = wHeight
-
+context.font = "14px Arial";
 var fillTexture = new Image()
 fillTexture.src ="texture.jpg"
 
@@ -114,6 +114,10 @@ function draw() {
         context.lineWidth = 3;
         context.strokeStyle= 'rgb(0, 0, 0)'
         context.strokeRect(p.x - 15, p.y - 40, 100,10)
+
+        //draw player name
+        context.fillStyle= 'rgb(255, 255, 255)'
+        context.fillText(p.name, p.x - 15,p.y - 15)
         
     })
 
