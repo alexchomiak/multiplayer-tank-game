@@ -5,12 +5,15 @@ const Player = require('./classes/Player')
 const PlayerConfig = require('./classes/PlayerConfig')
 const PlayerData = require('./classes/PlayerData')
 const Bullet = require('./classes/Bullet')
-
+const Pillar = require('./classes/Pillar')
 
 //collision functions
 const bulletCollidingWithPlayer = require('./colllision').bulletCollidingWithPlayer
+const rectCollision = require('./colllision').rectCollideswithOtherRect
+
 
 let tankSize = undefined
+let pillarSize = 64
 
 const fps = 30
 
@@ -19,19 +22,41 @@ let gameConfig = {
 }
 
 let gameSettings = {
-    mapWidth : 2500,
-    mapHeight : 2500,
+    mapWidth : 1000,
+    mapHeight : 1000,
     tickRate : 1000/fps
 }
 
 let players = []
 let bullets = []
+let pillars = []
+
+
+//create pillars
+for(var i = 0; i < gameConfig.pillarCount; i++) {
+    let coordinateFound = false
+    let newPillar = {}
+    while(!coordinateFound) {
+        coordinateFound = true;
+        let x = Math.floor(Math.random() * gameSettings.mapWidth)
+        let y =  Math.floor(Math.random() * gameSettings.mapHeight)
+
+        newPillar = new Pillar(x,y)
+        pillars.forEach((pillar) => {
+            if(rectCollision(newPillar,pillarSize,pillar,pillarSize)) {
+                coordinateFound = false;
+            }
+        })
+    }
+
+  
+    pillars.push(newPillar)
+}
 
 setInterval(() => {
     //update bullet locations
     bullets.forEach((bullet) => {
        
-      
         bullet.x += bullet.xVec
         bullet.y -= bullet.yVec
         bulletCollidingWithPlayer(bullet,players,tankSize).then((player) => {
@@ -67,15 +92,41 @@ setInterval(() => {
            
             //let dotproduct = xVec
 
-           
+        
 
            // bullet.shotAngle = Math.PI
             bullet.reflectCount++;
-            if(bullet.reflectCount > 2) bullets.splice(bullets.indexOf(bullet),1)
+       
 
       
         }
 
+        let oldBulletX = bullet.x - bullet.xVec
+        let oldBulletY = bullet.y + bullet.yVec
+        //check if bullet colliding with pillar
+        pillars.forEach((pillar) => {
+            if(rectCollision(bullet,1,pillar,pillarSize)) {
+                //console.log('pillar collision')
+                let offset = 10
+
+            
+                console.log(pillar.y, pillar.y + pillarSize)
+                console.log(oldBulletY,bullet.y)
+                console.log('--------------')
+                if(oldBulletX < pillar.x || oldBulletX > pillar.x + pillarSize) {
+                    bullet.xVec = -bullet.xVec
+                }
+
+                if(oldBulletY <= pillar.y || oldBulletY >= pillar.y + pillarSize) {
+                    bullet.yVec = -bullet.yVec
+                }
+
+            
+                bullet.reflectCount += .5
+            }
+        })
+
+        if(bullet.reflectCount > 2) bullets.splice(bullets.indexOf(bullet),1)
        
     })
 },gameSettings.tickRate)
@@ -92,7 +143,7 @@ io.on('connect', (socket) => {
         let playerConfig = new PlayerConfig()
 
         //init playerdata
-        let playerData = new PlayerData(socket.id,data.username,0,0)
+        let playerData = new PlayerData(socket.id,data.username,10,10)
 
         if(tankSize === undefined) tankSize = data.tankSize
 
@@ -111,7 +162,8 @@ io.on('connect', (socket) => {
             playerY : playerData.y,
             playerAngle : playerData.angle,
             playerTurretAngle : playerData.turretAngle,
-            gameSettings
+            gameSettings,
+            pillars
         })
 
         Array.from(players, player => player.playerData)
@@ -145,10 +197,13 @@ io.on('connect', (socket) => {
     socket.on('tick', (data) => {
         //handle movement
 
+        let validMove = true
         let newX = undefined, newY = undefined
      
         player.playerData.turretAngle = data.turretAngle
 
+
+      
 
         if(data.forwards && !data.backwards) {
             newX =  player.playerData.x +  Math.sin(player.playerData.angle) * player.playerConfig.speed
@@ -159,9 +214,13 @@ io.on('connect', (socket) => {
             newY = player.playerData.y +  Math.cos(player.playerData.angle) * player.playerConfig.speed
         }
 
+        pillars.forEach((pillar) => {
+            if(rectCollision({x: newX, y: newY},tankSize,pillar,pillarSize)) validMove = false
+        })
+
         
         //check if valid move
-        if(newX != undefined && newY != undefined && newX >= 0 && newX <= gameSettings.mapWidth && newY >= 0 && newY <= gameSettings.mapHeight) {
+        if(validMove && newX != undefined && newY != undefined && newX >= 0 && newX <= gameSettings.mapWidth && newY >= 0 && newY <= gameSettings.mapHeight) {
             player.playerData.x = newX
             player.playerData.y = newY
         }

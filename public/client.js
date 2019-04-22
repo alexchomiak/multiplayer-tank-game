@@ -24,6 +24,8 @@ socket.on('initialized', (data) => {
 
     settings = data.gameSettings
     players = data.players
+    pillars = data.pillars
+    console.log(pillars)
 })
 
 
@@ -38,6 +40,7 @@ socket.on('tock', (data) => {
     players = data.players
     bullets = data.bullets
 
+  
     death = data.death
 
     if(death) socket.close()

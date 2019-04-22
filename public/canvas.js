@@ -66,7 +66,12 @@ function draw() {
     
 
 
- 
+    
+    //draw pillars
+    pillars.forEach((pill) => {
+        context.drawImage(pillar,pill.x,pill.y)
+    })
+
 
    
 
@@ -123,9 +128,9 @@ function draw() {
     })
 
 
-    context.beginPath()
-    context.fillStyle = 'rgb(0,255,0)'
-     context.fill()
+    //context.beginPath()
+    //context.fillStyle = 'rgb(0,255,0)'
+     //context.fill()
      //x += .1
      
 

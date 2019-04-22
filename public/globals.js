@@ -4,6 +4,7 @@ let bullets = []
 let settings = {
 }
 
+let pillars = []
 let death = false;
 
 let forwards = false
@@ -19,5 +20,8 @@ tank.src = "tanktest.png"
 
 var turret = new Image()
 turret.src = "turret.png"
+
+var pillar = new Image()
+pillar.src = "pillar.png"
 
 
