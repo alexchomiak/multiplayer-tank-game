@@ -1,24 +1,46 @@
 //setup game canvas
-let wHeight = $(window).height();
-let wWidth = $(window).width();
+
 let canvas = document.querySelector("#game")
 let context = canvas.getContext('2d')
+
+
+let wHeight = $(window).height();
+let wWidth = $(window).width();
 canvas.width = wWidth
 canvas.height = wHeight
 
+var fillTexture = new Image()
+fillTexture.src ="texture.jpg"
 
 
+//resize event listener for canvas
+$(window).resize(() => {
+    let windowHeight = $(window).height();
+    let windowWidth = $(window).width();
 
+    if(window.width != canvas.width) {
+        canvas.width = windowWidth
+    }
+
+    if(window.height != canvas.height) {
+        canvas.height = windowHeight
+    }
+})
 
 
 function draw() {
-     //set transform
-     context.setTransform(1,0,0,1,0,0)
+    var fillPattern = context.createPattern(fillTexture, "repeat");
+
+ 
+
+    //set transform
+    context.setTransform(1,0,0,1,0,0)
 
 
     //clear canvas map width and height 110%
     context.clearRect(0,0,settings.mapWidth + canvas.width, settings.mapHeight + canvas.height)
 
+   
 
      //camera code !TODO
     //clamp cam to player
@@ -28,15 +50,20 @@ function draw() {
     
 
 
-
+    if(death) return
+    //translate to camera
     context.translate(camX,camY)
+    
+    //draw texture rectangle
+    context.fillStyle = fillPattern
+    context.fillRect(0,0, settings.mapWidth + tank.width, settings.mapHeight + tank.height)
 
         //draw map border
-        context.strokeRect(0,0, settings.mapWidth + tank.width, settings.mapHeight + tank.height)
-
-    context.lineWidth = 5;
-    context.strokeStyle= 'rgb(0,255,0)'
-
+    context.lineWidth = 10;
+    context.strokeStyle= 'rgb(114, 0, 0)'
+    
+    context.strokeRect(0,0, settings.mapWidth + tank.width, settings.mapHeight + tank.height)
+    
 
 
  
@@ -45,13 +72,17 @@ function draw() {
 
    
 
-    console.log('---------')
     players.forEach((p) => {
-        console.log(p.x,p.y)
-      
         context.save()
+      
         context.scale(1,1)
    
+        
+     
+   
+
+
+        //draw player
         context.translate(p.x + (tank.width/2),p.y + (tank.height/2))
         context.rotate(p.angle)
     
@@ -60,11 +91,30 @@ function draw() {
         context.rotate(-p.angle)
         context.rotate(p.turretAngle)
         context.drawImage(turret,-tank.width/2,-tank.height/2)
-        
+
         context.restore()
+
+
+        //draw each players health bar
+        //draw players health bar base
+        context.fillStyle = 'rgb(255,0,0)'
+        context.fillRect(p.x - 15, p.y - 40, 100 ,10)
+    
+        //draw players health
+        context.fillStyle = 'rgb(0,255,0)'
+        context.fillRect(p.x - 15, p.y - 40, (p.health/100.0) * 100,10)
+
+
+        //outline healthbar
+        context.lineWidth = 3;
+        context.strokeStyle= 'rgb(0, 0, 0)'
+        context.strokeRect(p.x - 15, p.y - 40, 100,10)
+        
     })
 
-    console.log('----------')
+
+
+
     bullets.forEach((bullet) => {
         context.beginPath()
         context.fillStyle = "rgb(255, 255, 0)"
@@ -78,13 +128,20 @@ function draw() {
      context.fill()
      //x += .1
      
+
+     
+
+
     requestAnimationFrame(draw)
 }
 
 document.onkeydown = checkKeyDown;
 document.onkeyup = checkKeyUp
 
-
+document.oncontextmenu = (e) => {
+    e.preventDefault()
+    console.log('right click')
+}
 document.onclick = handleClick;
 
 canvas.addEventListener('mousemove',(event) => {

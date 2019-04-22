@@ -7,6 +7,7 @@ class PlayerData {
         this.angle = 0;
         this.turretAngle = 0;
         this.health = 100;
+        this.death = false;
     }
 }
 

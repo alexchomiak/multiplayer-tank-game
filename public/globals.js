@@ -4,6 +4,8 @@ let bullets = []
 let settings = {
 }
 
+let death = false;
+
 let forwards = false
 let backwards = false
 let left = false
@@ -17,3 +19,5 @@ tank.src = "tanktest.png"
 
 var turret = new Image()
 turret.src = "turret.png"
+
+

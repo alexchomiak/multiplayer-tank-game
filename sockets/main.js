@@ -6,36 +6,70 @@ const PlayerConfig = require('./classes/PlayerConfig')
 const PlayerData = require('./classes/PlayerData')
 const Bullet = require('./classes/Bullet')
 
+
+//collision functions
+const bulletCollidingWithPlayer = require('./colllision').bulletCollidingWithPlayer
+
 let tankSize = undefined
 
 const fps = 30
 
+let gameConfig = {
+    pillarCount : 10
+}
+
 let gameSettings = {
-    mapWidth : 1000,
-    mapHeight : 1000,
+    mapWidth : 2500,
+    mapHeight : 2500,
     tickRate : 1000/fps
 }
 
 let players = []
 let bullets = []
 
-const bulletVelocity = 15
 setInterval(() => {
     //update bullet locations
     bullets.forEach((bullet) => {
+       
       
-        bullet.x += Math.sin(bullet.shotAngle) * bulletVelocity
-        bullet.y -= Math.cos(bullet.shotAngle) * bulletVelocity
+        bullet.x += bullet.xVec
+        bullet.y -= bullet.yVec
+        bulletCollidingWithPlayer(bullet,players,tankSize).then((player) => {
+         
+            console.log('collision with ' + player.id)
+            player.playerData.health -= 10
+            console.log(player.playerData.health)
 
+            if(player.playerData.health <= 0) player.playerData.death = true
+
+            bullets.splice(bullets.indexOf(bullet),1)
+        }).catch(() => {})
         if(bullet.x > gameSettings.mapWidth + tankSize || bullet.x < 0 || bullet.y > gameSettings.mapHeight + tankSize || bullet.y < 0) {
-            if(bullet.x < 0) bullet.x = 1;
-            if(bullet.x > gameSettings.mapWidth + tankSize) bullet.x = gameSettings.mapWidth + tankSize - 1
+            if(bullet.x < 0) {
+                bullet.x = 1;
+                bullet.xVec = -bullet.xVec
+            }
+            if(bullet.x > gameSettings.mapWidth + tankSize){
+                bullet.x = (gameSettings.mapWidth + tankSize) - 1
+                bullet.xVec = -bullet.xVec
+            }
 
-            if(bullet.y < 0) bullet.y = 1;
-            if(bullet.y > gameSettings.mapHeight + tankSize) bullet.y = gameSettings.mapHeight + tankSize - 1
+            if(bullet.y < 0){
+                bullet.y = 1;
+                bullet.yVec = -bullet.yVec
+            }
+            if(bullet.y > gameSettings.mapHeight + tankSize){
+                bullet.y = (gameSettings.mapHeight + tankSize) - 1
+                bullet.yVec = -bullet.yVec
+            }
 
-            bullet.shotAngle += Math.PI -  ( Math.PI/2 -  bullet.shotAngle) 
+            
+           
+            //let dotproduct = xVec
 
+           
+
+           // bullet.shotAngle = Math.PI
             bullet.reflectCount++;
             if(bullet.reflectCount > 2) bullets.splice(bullets.indexOf(bullet),1)
 
@@ -94,6 +128,7 @@ io.on('connect', (socket) => {
             players: playersData,
             playerX: player.playerData.x,
             playerY: player.playerData.y,
+            death: player.playerData.death
         }) 
     }, gameSettings.tickRate)
         

@@ -36,8 +36,12 @@ socket.on('tock', (data) => {
         turretAngle: data.playerTurretAngle
     }
     players = data.players
-    console.log(players)
     bullets = data.bullets
+
+    death = data.death
+
+    if(death) socket.close()
+
     socket.emit('tick', {
         left,
         right,
@@ -46,6 +50,8 @@ socket.on('tock', (data) => {
         turretAngle,
         clicked
     })
+
+
 
     if(clicked === true) clicked = false
 })
