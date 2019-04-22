@@ -7,23 +7,18 @@ const PlayerData = require('./classes/PlayerData')
 const Bullet = require('./classes/Bullet')
 const Pillar = require('./classes/Pillar')
 
-//collision functions
-const bulletCollidingWithPlayer = require('./colllision').bulletCollidingWithPlayer
-const rectCollision = require('./colllision').rectCollideswithOtherRect
-
-
 let tankSize = 65
 let pillarSize = 64
 
 const fps = 30
 
 let gameConfig = {
-    pillarCount : 100
+    pillarCount : 10
 }
 
 let gameSettings = {
-    mapWidth : 2000,
-    mapHeight : 2000,
+    mapWidth : 1000,
+    mapHeight : 1000,
     tickRate : 1000/fps
 }
 
@@ -59,16 +54,37 @@ setInterval(() => {
        
         bullet.x += bullet.xVec
         bullet.y -= bullet.yVec
-        bulletCollidingWithPlayer(bullet,players,tankSize).then((player) => {
-         
-            console.log('collision with ' + player.id)
-            player.playerData.health -= 10
-            console.log(player.playerData.health)
 
-            if(player.playerData.health <= 0) player.playerData.death = true
+        let player = bulletCollidingWithPlayer(bullet,players,tankSize)
+
+        if( player !== null) {
+            
+            player.playerData.health -= 10
+
+
+            if(player.playerData.health <= 0) {
+                player.playerData.death = true
+
+                if(player.id !== bullet.ownerID)  {
+                    player.playerData.score = 0;
+                    bullet.owner.score += 50
+                }
+            } else {
+                if(player.id !== bullet.ownerID) {
+                    player.playerData.score -= 10
+                    bullet.owner.score += 10
+                }
+            
+            }
+            console.log(bullet.owner.score)
+
+
+
 
             bullets.splice(bullets.indexOf(bullet),1)
-        }).catch(() => {})
+        }
+
+
         if(bullet.x > gameSettings.mapWidth + tankSize || bullet.x < 0 || bullet.y > gameSettings.mapHeight + tankSize || bullet.y < 0) {
             if(bullet.x < 0) {
                 bullet.x = 1;
@@ -136,12 +152,29 @@ io.on('connect', (socket) => {
     let player = {}
 
     //socket listeners
-    socket.on('init', (data) => {
+    socket.on('init', async (data) => {
         //init player config
         let playerConfig = new PlayerConfig()
 
+
+        let x = 0, y = 0
+        //find random coordinate for player spawn
+        let coordinateFound = false;
+        while(!coordinateFound) {
+            x = Math.random() * gameSettings.mapWidth;
+            y = Math.random() * gameSettings.mapHeight
+
+            if(x < 50 || x > gameSettings.mapWidth - 50) continue
+            if(y < 50 || x > gameSettings.mapHeight - 50) continue
+
+
+            if(playerCollision(socket.id,x,y,players,tankSize) !== null) continue
+            if(playerCollidingWithPillar(x,y,pillars,tankSize) !== null) continue
+            coordinateFound = true;
+        }
+
         //init playerdata
-        let playerData = new PlayerData(socket.id,data.username,10,10)
+        let playerData = new PlayerData(socket.id,data.username,x,y)
 
     
 
@@ -192,8 +225,36 @@ io.on('connect', (socket) => {
         players = players.filter((p) => p.id != player.id)
     })
 
-    socket.on('tick', (data) => {
+    let tickCount = 0
+    let secondCount = 0;
+    let shotCoolOff = 0;
+    socket.on('tick',   (data) => {
         //handle movement
+        tickCount++;
+
+        //decrement shotCoolOff
+        if(shotCoolOff !== 0) shotCoolOff--;
+
+        if(tickCount === fps) {
+            tickCount = 0
+            secondCount++;
+
+            //player invincible for first 3 seconds of game
+            if(secondCount === 3 && player.playerData.invincible) {
+                secondCount = 0;
+                player.playerData.invincible = false;
+            }
+
+            if(secondCount === 2 && !player.playerData.invincible) {
+                //regenerate 10 health every 2 seconds
+                if(player.playerData.health !== 100) {
+                    player.playerData.health += 10;
+                }
+
+                if(player.playerData.health > 100) player.playerData.health = 100;
+                secondCount = 0;
+            }
+        }
 
         let validMove = true
         let newX = undefined, newY = undefined
@@ -212,11 +273,15 @@ io.on('connect', (socket) => {
             newY = player.playerData.y +  Math.cos(player.playerData.angle) * player.playerConfig.speed
         }
 
-        pillars.forEach((pillar) => {
-            if(rectCollision({x: newX, y: newY},tankSize,pillar,pillarSize)) validMove = false
-        })
+      
+        if(playerCollision(player,newX,newY,players,tankSize) !== null) {
+            validMove = false;
+        }
 
+        if(playerCollidingWithPillar(newX,newY,pillars,tankSize) !== null) validMove = false
         
+        //await playerCollision(player.id,newX,newY,players,tankSize).then(() => validMove = false).catch(() => {})
+    
         //check if valid move
         if(validMove && newX != undefined && newY != undefined && newX >= 0 && newX <= gameSettings.mapWidth && newY >= 0 && newY <= gameSettings.mapHeight) {
             player.playerData.x = newX
@@ -231,8 +296,10 @@ io.on('connect', (socket) => {
             player.playerData.angle += player.playerConfig.angularSpeed
         }
 
-        //check if clicked
-        if(data.clicked) {
+
+         //check if clicked
+         if(shotCoolOff === 0 &&  data.clicked && !player.playerData.invincible) {
+             shotCoolOff = 10;
             let initialX = player.playerData.x
             let initialY = player.playerData.y
             initialX += tankSize /2
@@ -241,11 +308,65 @@ io.on('connect', (socket) => {
             initialX += (tankSize/1.5) * Math.sin(player.playerData.turretAngle)
             initialY -= (tankSize/1.5) * Math.cos(player.playerData.turretAngle)
 
-            bullets.push(new Bullet(initialX,initialY,player.playerData.turretAngle,player.name,player.id))
+            bullets.push(new Bullet(initialX,initialY,player.playerData.turretAngle,player.playerData,player.id))
         }
+
+        
 
     })
 
 
   
 })
+
+
+
+//collision functions
+function playerCollision(player,newX,newY,players,tankSize) {
+    let ret = null
+    players.forEach((p) => {
+        if(ret !== null) return
+        if(p.id === player.id) return
+        if(rectCollision({x: newX, y: newY},tankSize,p.playerData,tankSize)) ret = p
+    })
+    if(ret !== null) return ret
+    else return null
+}
+
+
+function rectCollision(rect1,rect1size,rect2,rect2size) {
+    if(rect1.x <= rect2.x + rect2size && rect1.x + rect1size >= rect2.x && rect1.y <= rect2.y + rect2size && rect1.y + rect1size >= rect2.y) {
+        //console.log('collision')
+        
+        return true
+    }
+
+
+
+
+    return false
+}
+
+
+function bulletCollidingWithPlayer(bullet, players, tankSize) {
+        let ret = null
+        players.forEach((player) => {
+            //  console.log(bullet,player)
+            if(!player.playerData.invincible && bullet.x >= player.playerData.x && bullet.x <= (player.playerData.x + tankSize) && (bullet.y >= player.playerData.y && bullet.y <= player.playerData.y + tankSize)) {
+                ret = player
+            } 
+        })
+        
+
+        return ret
+   
+}
+
+
+function playerCollidingWithPillar(newX,newY,pillars,tankSize) {
+    let ret = null
+    pillars.forEach((pillar) => {
+        if(rectCollision({x: newX, y: newY},tankSize,pillar,pillarSize)) ret = pillar
+    })
+    return ret
+}

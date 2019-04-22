@@ -44,8 +44,8 @@ function draw() {
 
      //camera code !TODO
     //clamp cam to player
-    const camX = -player.x + canvas.width/2 - tank.width
-    const camY = -player.y + canvas.height/2 - tank.height
+    const camX = -player.x + canvas.width/2 - tank.width/2
+    const camY = -player.y + canvas.height/2 - tank.height/2
     //translate awllows us to move canvas around
     
 
@@ -82,11 +82,9 @@ function draw() {
       
         context.scale(1,1)
    
-        
+        //if player invincible make lighter
+        if(p.invincible) context.globalAlpha = .3
      
-   
-
-
         //draw player
         context.translate(p.x + (tank.width/2),p.y + (tank.height/2))
         context.rotate(p.angle)
@@ -147,11 +145,19 @@ function draw() {
 document.onkeydown = checkKeyDown;
 document.onkeyup = checkKeyUp
 
+/*
 document.oncontextmenu = (e) => {
     e.preventDefault()
     console.log('right click')
 }
-document.onclick = handleClick;
+*/
+
+
+
+document.onmousedown = () => {clicked = true}
+document.onmouseup = () => {clicked = false}
+
+
 
 canvas.addEventListener('mousemove',(event) => {
     const mousePosition = {
@@ -162,9 +168,7 @@ canvas.addEventListener('mousemove',(event) => {
     
 })
 
-function handleClick() {
-    clicked = true
-}
+
 
 function checkKeyDown(e) {
 	if (e.keyCode == '38' || e.keyCode == '87') {

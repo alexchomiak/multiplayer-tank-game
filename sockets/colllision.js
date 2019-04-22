@@ -1,5 +1,15 @@
-function collision(player,players) {
-    
+function playerCollision(playerID,newX,newY,players,tankSize) {
+    return new Promise((resolve, reject) => {
+        players.forEach((p) => {
+            if(p.id === playerID) return;
+            if(rectCollideswithOtherRect({x: newX, y: newY},tankSize,p.playerData,tankSize)) {
+                resolve(p)
+            }
+        })
+        reject()
+    })
+  
+
 }
 
 function bulletCollidingWithPlayer(bullet, players, tankSize) {
@@ -26,10 +36,6 @@ function bulletCollidingWithPlayer(bullet, players, tankSize) {
    
 }
 
-function bulletCollidingWithPillar() {
-
-}
-
 function rectCollideswithOtherRect(rect1,rect1size,rect2,rect2size) {
     if(rect1.x <= rect2.x + rect2size && rect1.x + rect1size >= rect2.x && rect1.y <= rect2.y + rect2size && rect1.y + rect1size >= rect2.y) {
         //console.log('collision')
@@ -45,5 +51,6 @@ function rectCollideswithOtherRect(rect1,rect1size,rect2,rect2size) {
 
 module.exports = {
     bulletCollidingWithPlayer,
-    rectCollideswithOtherRect
+    rectCollideswithOtherRect,
+    playerCollision
 }

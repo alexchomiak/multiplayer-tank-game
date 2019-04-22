@@ -15,6 +15,7 @@ init()
 
 //socket listeners
 socket.on('initialized', (data) => {
+    console.log(data)
     player = {
         x: data.playerX,
         y: data.playerY,
@@ -56,7 +57,7 @@ socket.on('tock', (data) => {
 
 
 
-    if(clicked === true) clicked = false
+    
 })
 
 //tick

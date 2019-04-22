@@ -4,6 +4,7 @@ class Player {
         this.id = id;
         this.playerConfig = playerConfig
         this.playerData = playerData
+        this.invincible = true
     }
 }
 
