@@ -1,10 +1,9 @@
 class Player {
-    constructor(name,id,playerConfig,playerData) {
-        this.name = name
+    constructor(id,playerConfig,playerData) {
         this.id = id;
         this.playerConfig = playerConfig
         this.playerData = playerData
-        this.invincible = true
+    
     }
 }
 

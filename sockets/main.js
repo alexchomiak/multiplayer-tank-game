@@ -178,7 +178,7 @@ io.on('connect', (socket) => {
 
     
 
-        player = new Player(data.username,socket.id,playerConfig,playerData)
+        player = new Player(socket.id,playerConfig,playerData)
 
 
 
@@ -211,7 +211,8 @@ io.on('connect', (socket) => {
             players: playersData,
             playerX: player.playerData.x,
             playerY: player.playerData.y,
-            death: player.playerData.death
+            death: player.playerData.death,
+            score: player.playerData.score
         }) 
     }, gameSettings.tickRate)
         

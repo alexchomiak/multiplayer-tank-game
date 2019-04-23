@@ -40,9 +40,10 @@ socket.on('tock', (data) => {
     }
     players = data.players
     bullets = data.bullets
-
-  
     death = data.death
+
+    updateScore(data.score)
+    updateScoreBoard()
 
     if(death) socket.close()
 
@@ -62,3 +63,35 @@ socket.on('tock', (data) => {
 
 //tick
 
+
+//update ui
+function updateScore(score){
+    document.querySelector(".player-score").innerHTML = score
+}
+
+function updateScoreBoard() {
+    //console.log(players)
+    let scores = players.map((p) => {
+        return {name: p.name, score: p.score}
+    })
+
+   
+    
+    scores.sort((a,b) => {
+        return (a.score > b.score) ? -1 : 1;
+    })
+
+
+    
+
+    //console.log(scores)
+    scores = scores.splice(0,5)
+    document.querySelector(".leader-board").innerHTML = ""
+    scores.forEach((p) => {
+        document.querySelector(".leader-board").innerHTML += `<li class="leaderboard-player"> ${p.name} - ${p.score}</li>`
+    })
+    
+}
+
+
+//modal functioms

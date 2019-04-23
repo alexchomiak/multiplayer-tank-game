@@ -4,6 +4,8 @@ let bullets = []
 let settings = {
 }
 
+
+
 let pillars = []
 let death = false;
 
@@ -13,6 +15,8 @@ let left = false
 let right = false
 let clicked = false
 let turretAngle = 0
+
+let score = 0;
 
 //images
 var tank = new Image()

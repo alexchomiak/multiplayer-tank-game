@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" type="text/css" href="/styles.css">
+
     <title>Tank Game</title>
 
     <style>
@@ -16,7 +18,31 @@
     </style>
 </head>
 <body>
-    <canvas id="game" style="background: url('background.jpg')" >
+    <div id="container">
+		<div id="game-field" class="col-sm-12">
+			<canvas id="game" style="background: url('images/starfield.jpg')">
+				<!-- our drawing will go here -->
+			</canvas>
+			<div id="score-wrapper" class="hiddenOnStart" > <!-- should be hidden-->
+				<div>Score: <span class="player-score"></span></div>
+			</div>
+			<div id="leader-board-wrapper" class="hiddenOnStart" > <!-- should be hidden-->
+				<div id="leader-board">
+					<h3 class="text-center"> Leaderboard</h3>
+					<hr>
+					<ol class="leader-board">
+						<li class="leaderboard-player"></li>
+					</ol>
+					<hr>
+			</div>
+			</div>
+			<div id="game-message-wrapper">
+				<div id="game-message">{{gameMessage}}</div>
+			</div>
+		</div>
+		
+	</div>
+
 
     </canvas>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
