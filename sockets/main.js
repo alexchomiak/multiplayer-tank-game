@@ -13,12 +13,12 @@ let pillarSize = 64
 const fps = 30
 
 let gameConfig = {
-    pillarCount : 10
+    pillarCount : 75
 }
 
 let gameSettings = {
-    mapWidth : 1000,
-    mapHeight : 1000,
+    mapWidth : 2500,
+    mapHeight : 2500,
     tickRate : 1000/fps
 }
 
@@ -66,7 +66,6 @@ setInterval(() => {
                 player.playerData.death = true
 
                 if(player.id !== bullet.ownerID)  {
-                    player.playerData.score = 0;
                     bullet.owner.score += 50
                 }
             } else {

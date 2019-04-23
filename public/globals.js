@@ -4,6 +4,8 @@ let bullets = []
 let settings = {
 }
 
+let name = ""
+
 
 
 let pillars = []
