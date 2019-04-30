@@ -72,6 +72,13 @@ class Connection {
         }
 
         function updateScoreBoard() {
+            if(players.length < 4) {
+                document.querySelector(".leader-board").innerHTML = ""
+                document.querySelector(".leader-board").innerHTML += "<p> There must be 4 players</p>"
+                document.querySelector(".leader-board").innerHTML += "<p> to play!</p>"
+                return;
+            }
+            
             //console.log(players)
             let scores = players.map((p) => {
                 return {name: p.name, score: p.score}

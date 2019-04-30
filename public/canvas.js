@@ -31,8 +31,6 @@ $(window).resize(() => {
 function draw() {
     var fillPattern = context.createPattern(fillTexture, "repeat");
 
- 
-
     //set transform
     context.setTransform(1,0,0,1,0,0)
 

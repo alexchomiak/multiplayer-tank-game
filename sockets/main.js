@@ -256,6 +256,8 @@ io.on('connect', (socket) => {
             }
         }
 
+        if(players.length < 4) player.playerData.invincible = true
+
         let validMove = true
         let newX = undefined, newY = undefined
      
