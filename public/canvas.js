@@ -31,8 +31,6 @@ $(window).resize(() => {
 function draw() {
     var fillPattern = context.createPattern(fillTexture, "repeat");
 
- 
-
     //set transform
     context.setTransform(1,0,0,1,0,0)
 
@@ -78,6 +76,7 @@ function draw() {
    
 
     players.forEach((p) => {
+        if(p.health <= 0) return;
         context.save()
       
         context.scale(1,1)
