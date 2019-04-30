@@ -58,7 +58,7 @@ class Connection {
                 clicked
             })
 
-
+            gameInitialized = data.gameInitialized
 
             
         })
@@ -72,7 +72,7 @@ class Connection {
         }
 
         function updateScoreBoard() {
-            if(players.length < 4) {
+            if(!gameInitialized) {
                 document.querySelector(".leader-board").innerHTML = ""
                 document.querySelector(".leader-board").innerHTML += "<p> There must be 4 players</p>"
                 document.querySelector(".leader-board").innerHTML += "<p> to play!</p>"

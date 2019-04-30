@@ -76,6 +76,7 @@ function draw() {
    
 
     players.forEach((p) => {
+        if(p.health <= 0) return;
         context.save()
       
         context.scale(1,1)

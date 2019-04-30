@@ -22,6 +22,8 @@ let gameSettings = {
     tickRate : 1000/fps
 }
 
+let gameInitialized = false
+
 let players = []
 let bullets = []
 let pillars = []
@@ -75,7 +77,6 @@ setInterval(() => {
                 }
             
             }
-            console.log(bullet.owner.score)
 
 
 
@@ -211,7 +212,8 @@ io.on('connect', (socket) => {
             playerX: player.playerData.x,
             playerY: player.playerData.y,
             death: player.playerData.death,
-            score: player.playerData.score
+            score: player.playerData.score,
+            gameInitialized
         }) 
     }, gameSettings.tickRate)
         
@@ -256,7 +258,9 @@ io.on('connect', (socket) => {
             }
         }
 
-        if(players.length < 4) player.playerData.invincible = true
+        if(players.length < 2) gameInitialized = false;
+        if(players.length >= 4) gameInitialized = true;
+        if(!gameInitialized) player.playerData.invincible = true;
 
         let validMove = true
         let newX = undefined, newY = undefined

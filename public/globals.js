@@ -3,6 +3,7 @@ let players = []
 let bullets = []
 let settings = {
 }
+let gameInitialized = false;
 
 let name = ""
 
