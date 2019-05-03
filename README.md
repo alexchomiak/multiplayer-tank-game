@@ -1,4 +1,4 @@
-#To start Game Server Locally
+# To start Game Server Locally
 1. CD into root directory of project
 2. enter the command: node index.js
 3. connect to http://localhost:9999 in your browser to connect clients
