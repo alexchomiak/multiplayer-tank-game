@@ -1,6 +1,9 @@
 # To start Game Server Locally
 1. CD into root directory of project
-2. enter the command: node index.js
+2. enter the command
+```
+node index.js
+```
 3. connect to http://localhost:9999 in your browser to connect clients
 
 Alernatively, you can play the game at https://scoreboard.chom.es (if it is still running on my server if you are reading this in the future)
