@@ -1,6 +1,6 @@
 # To start Game Server Locally
 1. CD into root directory of project
-2. enter the command
+2. Enter the command:
 ```
 node index.js
 ```
